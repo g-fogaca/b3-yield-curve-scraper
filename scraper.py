@@ -68,7 +68,7 @@ def extract_table(date):
 #%% Preparation    
 # Input
 dates_raw = pd.read_csv("data/input.csv")["period"]
-dates_formatted = pd.to_datetime(dates_raw, format="%d/%m/%y").dt.strftime("%d/%m/%Y")
+dates_formatted = pd.to_datetime(dates_raw).dt.strftime("%d/%m/%Y")
 
 # Webdriver manager
 service = Service(ChromeDriverManager().install())
@@ -95,10 +95,10 @@ df_raw = pd.concat(dataframes, ignore_index=True)
 
 #%% Data wrangling
 
-df_clean = df_raw.copy().set_axis(["maturity", "business_days", "days360", "date", "date_error", "business_days_error", "days360_error"], axis=1)
+df_clean = df_raw.copy().set_axis(["maturity", "business_days", "days360", "date", "business_days_error", "days360_error"], axis=1)
 df_clean['business_days'] = df_clean['business_days'].combine_first(df_clean['business_days_error'])
 df_clean['days360'] = df_clean['days360'].combine_first(df_clean['days360_error'])
-df_clean.drop(columns=['date_error', 'business_days_error', 'days360_error'], inplace=True)
+df_clean.drop(columns=['business_days_error', 'days360_error'], inplace=True)
 df_clean['date'] = pd.to_datetime(df_clean['date'], format='%d/%m/%Y')
 cols = ['date'] + [col for col in df_clean.columns if col != 'date']
 df_clean = df_clean[cols]
